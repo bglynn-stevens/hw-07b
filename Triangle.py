@@ -25,8 +25,14 @@ def classifyTriangle(a, b, c):
     # 1. FIXED: Initial Validation Checks (Addresses the 11 FAILED tests)
     # Checks for invalid input types (non-integers/non-floats) and constraints.
     
+    # Check if inputs are numbers, greater than 0, AND strictly integers 
+    # (or floats that are whole numbers, which is not strictly required here).
+    # Since the assignment implies integer side lengths, we must strictly check for int type.
+    if not (isinstance(a, int) and isinstance(b, int) and isinstance(c, int)):
+        return 'InvalidInput'
+        
     # Check if inputs are numbers and greater than 0
-    if not all(isinstance(side, (int, float)) and side > 0 for side in [a, b, c]):
+    if not all(side > 0 for side in [a, b, c]):
         return 'InvalidInput'
         
     # Check for upper bound constraint (assuming max side length is 200 based on typical assignments)
