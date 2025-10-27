@@ -8,50 +8,59 @@ The primary goal of this file is to demonstrate a simple python program to class
 @author: jrr
 @author: rk
 """
-
-def classifyTriangle(a,b,c):
+def classifyTriangle(a, b, c):
     """
-    Your correct code goes here...  Fix the faulty logic below until the code passes all of 
-    you test cases. 
+    Given the lengths of the three sides of a triangle, a, b, and c, this
+    function classifies the triangle type.
     
-    This function returns a string with the type of triangle from three integer values
-    corresponding to the lengths of the three sides of the Triangle.
-    
-    return:
-        If all three sides are equal, return 'Equilateral'
-        If exactly one pair of sides are equal, return 'Isoceles'
-        If no pair of  sides are equal, return 'Scalene'
-        If not a valid triangle, then return 'NotATriangle'
-        If the sum of any two sides equals the squate of the third side, then return 'Right'
-      
-      BEWARE: there may be a bug or two in this code
+    The function returns one of the following strings:
+    - 'Equilateral'
+    - 'Isoceles'
+    - 'Scalene'
+    - 'Right'
+    - 'NotATriangle'
+    - 'InvalidInput'
     """
-
-    # require that the input values be >= 0 and <= 200
+    
+    # 1. FIXED: Initial Validation Checks (Addresses the 11 FAILED tests)
+    # Checks for invalid input types (non-integers/non-floats) and constraints.
+    
+    # Check if inputs are numbers and greater than 0
+    if not all(isinstance(side, (int, float)) and side > 0 for side in [a, b, c]):
+        return 'InvalidInput'
+        
+    # Check for upper bound constraint (assuming max side length is 200 based on typical assignments)
+    # Your test was: self.assertEqual(classifyTriangle(201,100,100),'InvalidInput'
     if a > 200 or b > 200 or c > 200:
         return 'InvalidInput'
-        
-    if a <= 0 or b <= b or c <= 0:
-        return 'InvalidInput'
-    
-    # verify that all 3 inputs are integers  
-    # Python's "isinstance(object,type) returns True if the object is of the specified type
-    if not(isinstance(a,int) and isinstance(b,int) and isinstance(c,int)):
-        return 'InvalidInput';
-      
-    # This information was not in the requirements spec but 
-    # is important for correctness
-    # the sum of any two sides must be strictly less than the third side
-    # of the specified shape is not a triangle
-    if (a >= (b - c)) or (b >= (a - c)) or (c >= (a + b)):
+
+    # 2. Triangle Inequality Check (Covers the 'NotATriangle' failures)
+    # The sum of the lengths of any two sides of a triangle must be strictly 
+    # greater than the length of the third side.
+    # The equality (a + b == c) is the degenerate case, which is also 'NotATriangle'.
+    sides = sorted([a, b, c])
+    x, y, z = sides[0], sides[1], sides[2]
+
+    if x + y <= z:
         return 'NotATriangle'
-        
-    # now we know that we have a valid triangle 
-    if a == b and b == a:
+    
+    # Check for Equilateral (all sides equal)
+    if a == b and b == c:
         return 'Equilateral'
-    elif ((a * 2) + (b * 2)) == (c * 2):
+    
+    # Check for Right Triangle (a^2 + b^2 = c^2, using a small tolerance for floats if needed)
+    # Note: Using integer multiplication to avoid float issues, but comparing sorted squares.
+    x_sq, y_sq, z_sq = x*x, y*y, z*z
+    
+    # Using a small tolerance (e.g., 0.001) is good practice for floating point comparison,
+    # but for simple integer inputs like (3,4,5), direct comparison works if input is strictly integers.
+    # We will use direct comparison since the inputs are primarily integers.
+    if abs(x_sq + y_sq - z_sq) < 0.001:
         return 'Right'
-    elif (a != b) and  (b != c) and (a != b):
-        return 'Scalene'
-    else:
+
+    # Check for Isosceles (at least two sides equal)
+    if a == b or b == c or a == c:
         return 'Isoceles'
+        
+    # If it is none of the above, it must be Scalene (no sides equal)
+    return 'Scalene'
